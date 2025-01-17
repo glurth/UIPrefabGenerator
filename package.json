@@ -1,0 +1,12 @@
+{
+  "name": "com.glurth.uiprefabgenerator",
+  "version": "1.0.0",
+  "displayName": "UIPrefabGenerator",
+  "description": "Create UI prefabs for Unity canvas and stores them in the asset database.",
+  "unity": "2019.1",
+  "dependencies": {},
+  "author": {
+    "name": "Glurth"
+  },
+  "hideInEditor": "false"
+}
