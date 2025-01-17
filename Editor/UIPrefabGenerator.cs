@@ -22,15 +22,22 @@ public class UIPrefabGenerator
         EnsureDirectoryExists(PrefabPath);
         currentPreFabPath = PrefabPath;
 
+        string unityLegacyUIMenuPathPrefix = "GameObject/UI";
+        if (string.Compare(Application.unityVersion, "2022.1.0") >= 0)
+        {
+            Debug.Log("Legacy");
+            unityLegacyUIMenuPathPrefix = "GameObject/UI/Legacy";
+        }
+
         #region TextBaseAndVariants
         // Create BaseTextPrefab
-       // GameObject baseTextPrefab = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Text", "BaseTextPrefab");
+        // GameObject baseTextPrefab = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Text", "BaseTextPrefab");
         string baseTextName = "BaseTextPrefab";
         GameObject baseTextPrefab;
         bool forceRecreateTextVariants = false;
         if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
         {
-            baseTextPrefab = CreateMenuObject("GameObject/UI/Text", baseTextName);
+            baseTextPrefab = CreateMenuObject(unityLegacyUIMenuPathPrefix + "/Text", baseTextName);
             baseTextPrefab = SaveAsPrefab(baseTextPrefab);
             forceRecreateTextVariants = true;
         }
@@ -69,19 +76,19 @@ public class UIPrefabGenerator
         }
         #endregion
 
-        GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<InputField>("GameObject/UI/Input Field", "InputFieldPrefab",
+        GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<InputField>(unityLegacyUIMenuPathPrefix + "/Input Field", "InputFieldPrefab",
                                     (inputField) =>
                                     {
                                         inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, baseTextPrefab);
                                         inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
                                     });
-        GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>("GameObject/UI/Button", "BaseButtonPrefab",
+        GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>(unityLegacyUIMenuPathPrefix + "/Button", "BaseButtonPrefab",
                                 (button) =>
                                 {
                                     Text buttonText = button.gameObject.GetComponentInChildren<Text>();
                                     ReplaceComponentsGO(buttonText, titleTextPrefab);
                                 });
-        GameObject dropdownObj = CreateOrGetPreFabFromMenuWithChanges<Dropdown>("GameObject/UI/Dropdown", "DropdownPreFab",
+        GameObject dropdownObj = CreateOrGetPreFabFromMenuWithChanges<Dropdown>(unityLegacyUIMenuPathPrefix + "/Dropdown", "DropdownPreFab",
                         (dropdown) =>
                         {
                             dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
