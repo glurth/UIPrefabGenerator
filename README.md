@@ -7,24 +7,24 @@ The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, 
 
 ### Prefab-Based UI Composition Workflow
 
-**Overview:**
-This workflow involves creating reusable prefabs for Unity UI components. These prefabs act as templates that are instantiated and customized as needed. Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
-Variants in Unity are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.
+>**Overview:**
+>This workflow involves creating reusable prefabs for Unity UI components. These prefabs act as templates that are instantiated and customized as needed. Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
+>Variants in Unity are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.
 
-**Workflow Steps:**
-1. **Design Base Prefabs**: Build foundational UI prefabs for common elements (e.g., buttons, panels, text fields). [This is what this package is good for.]
-2. **Create Variants**: Use prefab variants to customize specific properties or styles while retaining a link to the base prefab for easier updates.
-3. **Organize Prefabs**: Optionally, store prefabs in a structured hierarchy (e.g., categorized folders) for easy access and management.
-4. **Integrate into Canvas**: Populate your Unity Canvas by instantiating prefabs instead of building UI elements directly in the scene.
-5. **Update with Consistency**: Modify the base prefab to propagate changes across all instances and variants, simplifying large-scale updates.
+>**Workflow Steps:**
+>1. **Design Base Prefabs**: Build foundational UI prefabs for common elements (e.g., buttons, panels, text fields). [This is what this package is good for.]
+>2. **Create Variants**: Use prefab variants to customize specific properties or styles while retaining a link to the base prefab for easier updates.
+>3. **Organize Prefabs**: Optionally, store prefabs in a structured hierarchy (e.g., categorized folders) for easy access and management.
+>4. **Integrate into Canvas**: Populate your Unity Canvas by instantiating prefabs instead of building UI elements directly in the scene.
+>5. **Update with Consistency**: Modify the base prefab to propagate changes across all instances and variants, simplifying large-scale updates.
 
-**Advantages:**
-- **Consistency**: Ensures a uniform look and feel across the UI, reducing design discrepancies.
-- **Efficiency**: Saves time by avoiding repetitive recreation of UI elements.
-- **Flexibility with Variants**: Allows for quick customization while maintaining a connection to the original prefab.
-- **Ease of Maintenance**: Updating the base prefab automatically reflects changes across all instances and variants.
-- **Collaboration-Friendly**: Teams can work with pre-defined prefabs, reducing the risk of unaligned designs or functionality.
-- **Scalability**: Facilitates faster iteration and expansion of UI as the project grows.
+>**Advantages:**
+>- **Consistency**: Ensures a uniform look and feel across the UI, reducing design discrepancies.
+>- **Efficiency**: Saves time by avoiding repetitive recreation of UI elements.
+>- **Flexibility with Variants**: Allows for quick customization while maintaining a connection to the original prefab.
+>- **Ease of Maintenance**: Updating the base prefab automatically reflects changes across all instances and variants.
+>- **Collaboration-Friendly**: Teams can work with pre-defined prefabs, reducing the risk of unaligned designs or functionality.
+>- **Scalability**: Facilitates faster iteration and expansion of UI as the project grows.
 
 ## Features
 - **Automatic Prefab Generation**: Generates prefabs for commonly used UI elements such as Text, Buttons, Input Fields, Dropdowns, and more.
