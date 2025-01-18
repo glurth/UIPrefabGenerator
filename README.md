@@ -3,12 +3,13 @@ This Unity script allows you to automatically generate reusable and customizable
 
 ## Usage
 Either option may be used, but you probably don't want to use both.
--- **Generate Standard UI Prefabs**:
+
+- **Generate Standard UI Prefabs**:
    - Open Unity Editor.
    - Go to `Tools > Generate UI Prefabs` to generate and customize the standard UI prefabs.
    - This will create the prefabs in the `Assets/Prefabs/UI` directory.
 
--- **Generate TextMeshPro UI Prefabs**:
+- **Generate TextMeshPro UI Prefabs**:
    - Go to `Tools > Generate TextMeshPro UI Prefabs` to generate and customize the TextMeshPro UI prefabs.
    - The prefabs will be saved in the `Assets/Prefabs/UI_TextMeshPro` directory.
 
