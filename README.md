@@ -1,6 +1,16 @@
 # UIPrefabGenerator
-
 This Unity script allows you to automatically generate reusable and customizable UI prefabs for your project. It supports both standard Unity UI and TextMeshPro UI components. The prefabs are saved in the specified Asset folder and are designed to ensure consistency across scenes, reducing manual updates.
+
+## Usage
+Either option may be used, but you probably don't want to use both.
+-- **Generate Standard UI Prefabs**:
+   - Open Unity Editor.
+   - Go to `Tools > Generate UI Prefabs` to generate and customize the standard UI prefabs.
+   - This will create the prefabs in the `Assets/Prefabs/UI` directory.
+
+-- **Generate TextMeshPro UI Prefabs**:
+   - Go to `Tools > Generate TextMeshPro UI Prefabs` to generate and customize the TextMeshPro UI prefabs.
+   - The prefabs will be saved in the `Assets/Prefabs/UI_TextMeshPro` directory.
 
 ## Purpose
 The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, a modular approach to UI design in Unity. This workflow emphasizes the creation of reusable prefab templates and their variants to achieve consistency, efficiency, and scalability in UI development.
@@ -49,15 +59,3 @@ The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, 
 
 5. **Customization**: For each UI component, specific changes are applied, such as setting text properties or replacing components with the appropriate prefab variants. The user can create additional prefab variants using any of the generated prefabs, normally in the Unity editor.
 
-## Usage
-
-Either option may be used, but you probably don't want to use both.
-
-1. **Generate Standard UI Prefabs**:
-   - Open Unity Editor.
-   - Go to `Tools > Generate UI Prefabs` to generate and customize the standard UI prefabs.
-   - This will create the prefabs in the `Assets/Prefabs/UI` directory.
-
-2. **Generate TextMeshPro UI Prefabs**:
-   - Go to `Tools > Generate TextMeshPro UI Prefabs` to generate and customize the TextMeshPro UI prefabs.
-   - The prefabs will be saved in the `Assets/Prefabs/UI_TextMeshPro` directory.
