@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using TMPro;
 
 // Using prefabs for Canvas-based UI allows for reusable, modular UI elements.
 // Changes made to base prefabs propagate across all instances, ensuring consistency and reducing manual updates.
@@ -108,6 +109,64 @@ public class UIPrefabGenerator
 
 
         #region TestBaseAndVariants
+
+        // local Helper function to create text variants
+        GameObject CreateTextVariant(string prefabName, GameObject basePrefab, TMPro.TextAlignmentOptions alignment, float fontSize, TMPro.FontWeight fontWeight = FontWeight.Regular, Color? color = null)
+        {
+            GameObject variant;
+            if (!TryGetPreFabAsset(prefabName, out variant))
+            {
+                variant = CreatePrefabInstance(basePrefab, prefabName);
+                TMPro.TextMeshProUGUI textComponent = variant.GetComponent<TMPro.TextMeshProUGUI>();
+                textComponent.alignment = alignment;
+                textComponent.fontSize = fontSize;
+                textComponent.fontWeight = fontWeight;
+                if (color.HasValue) textComponent.color = color.Value;
+                variant = SaveAsPrefab(variant);
+            }
+            return variant;
+        }
+        // Create BaseTextPrefab
+        string baseTextName = "BaseTMPTextPrefab";
+        GameObject baseTextPrefab;
+        bool forceRecreateTextVariants = false;
+        if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
+        {
+            baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName);
+            TMPro.TextMeshProUGUI textComponent = baseTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
+            textComponent.fontSize = 24;
+            textComponent.color = Color.black;
+            baseTextPrefab = SaveAsPrefab(baseTextPrefab);
+            forceRecreateTextVariants = true;
+        }
+
+        // Large & Prominent Styles
+        CreateTextVariant("TitleTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 32, FontWeight.Bold);
+        CreateTextVariant("SubtitleTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 28, FontWeight.Bold);
+        CreateTextVariant("NotificationTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 26, FontWeight.Bold);
+
+        // Button Styles
+        GameObject buttonTextPrefab = CreateTextVariant("ButtonTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold);
+        CreateTextVariant("PrimaryButtonTMPTextPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.white);
+        CreateTextVariant("SecondaryButtonTMPTextPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.gray);
+        CreateTextVariant("DangerButtonTMPTextPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.red);
+
+        // Body & Dialog Styles
+        GameObject bodyTextPrefab= CreateTextVariant("BodyTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22);
+        CreateTextVariant("NarrativeTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Regular);
+        CreateTextVariant("QuestTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Bold);
+        CreateTextVariant("FlavorTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
+
+        // Tooltip & Status Styles
+        CreateTextVariant("TooltipTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 18, FontWeight.Regular, Color.yellow);
+        CreateTextVariant("HealthStatusTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.green);
+        CreateTextVariant("BuffStatusTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.blue);
+
+        // System & Field Styles
+        CreateTextVariant("SystemMessageTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.gray);
+        GameObject labelTextPrefab = CreateTextVariant("FieldLabelTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Bold);
+        GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
+        /*
         // Create BaseTextPrefab
         string baseTextName = "BaseTMPTextPrefab";
         GameObject baseTextPrefab;
@@ -153,29 +212,29 @@ public class UIPrefabGenerator
             TMPro.TextMeshProUGUI labelTextComponent = labelTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
             labelTextComponent.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             labelTextPrefab = SaveAsPrefab(labelTextPrefab);
-        }
+        }*/
         #endregion
 
         GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_InputField>("GameObject/UI/Input Field - TextMeshPro", "InputFieldTMPPrefab",
                                     (inputField) =>
                                     {
-                                        inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, baseTextPrefab);
+                                        inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, bodyTextPrefab);
                                         inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
                                     });
         GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>("GameObject/UI/Button - TextMeshPro", "BaseButtonTMPPrefab",
                                     (button) =>
                                     {
                                         TMPro.TextMeshProUGUI buttonText = button.gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-                                        buttonText = ReplaceComponentsGO(buttonText, titleTextPrefab);
+                                        buttonText = ReplaceComponentsGO(buttonText, buttonTextPrefab);
                                         buttonText.text = "Button";
                                     });
         GameObject dropdownObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_Dropdown>("GameObject/UI/Dropdown - TextMeshPro", "DropdownTMPPreFab",
                                     (dropdown) =>
                                     {
                                         dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
-                                        dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, labelTextPrefab);
+                                        dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, bodyTextPrefab);
                                     });
-
+        GameObject toggleObj = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Toggle", "TogglePrefab");
         GenerateNonTextUsingPreFabs();
         Debug.Log("UI Prefabs Generated and Customized!");
         Debug.Log("TextMeshPro UI Prefabs Generated and Customized!");
