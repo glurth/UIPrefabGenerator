@@ -122,7 +122,13 @@ public class UIPrefabGenerator
                 textComponent.fontSize = fontSize;
                 textComponent.fontWeight = fontWeight;
                 if (color.HasValue) textComponent.color = color.Value;
+                /*RectTransform rectTransform = variant.GetComponent<RectTransform>();
+                if (rectTransform != null)
+                {
+                    PrefabUtility.RevertObjectOverride(rectTransform, InteractionMode.UserAction);
+                }*/
                 variant = SaveAsPrefab(variant);
+               
             }
             return variant;
         }
@@ -132,7 +138,7 @@ public class UIPrefabGenerator
         bool forceRecreateTextVariants = false;
         if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
         {
-            baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName);
+            baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName); // we call the menu item to create the base text prefab
             TMPro.TextMeshProUGUI textComponent = baseTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
             textComponent.fontSize = 24;
             textComponent.color = Color.black;
@@ -166,59 +172,14 @@ public class UIPrefabGenerator
         CreateTextVariant("SystemMessageTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.gray);
         GameObject labelTextPrefab = CreateTextVariant("FieldLabelTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Bold);
         GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
-        /*
-        // Create BaseTextPrefab
-        string baseTextName = "BaseTMPTextPrefab";
-        GameObject baseTextPrefab;
-        bool forceRecreateTextVariants = false;
-        if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
-        {
-            baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName);
-            TMPro.TextMeshProUGUI textComponent = baseTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
-            textComponent.fontSize = 24;
-            textComponent.color = Color.black;
-            baseTextPrefab = SaveAsPrefab(baseTextPrefab);
-            forceRecreateTextVariants = true;
-        }
 
-        // Create PlaceholderTextPrefab
-        string placeholderTextName = "PlaceholderTMPTextPrefab";
-        GameObject placeholderTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(placeholderTextName, out placeholderTextPrefab))
-        {
-            placeholderTextPrefab = CreatePrefabInstance(baseTextPrefab, placeholderTextName);
-            placeholderTextPrefab.GetComponent<TMPro.TextMeshProUGUI>().color = Color.gray;
-            placeholderTextPrefab = SaveAsPrefab(placeholderTextPrefab);
-        }
-
-        // Create TitleTextPrefab
-        string titleTextName = "TitleTMPTextPrefab";
-        GameObject titleTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(titleTextName, out titleTextPrefab))
-        {
-            titleTextPrefab = CreatePrefabInstance(baseTextPrefab, titleTextName);
-            TMPro.TextMeshProUGUI textComponent = titleTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
-            textComponent.alignment = TMPro.TextAlignmentOptions.Center;
-            textComponent.fontSize += 2;
-            titleTextPrefab = SaveAsPrefab(titleTextPrefab);
-        }
-
-        // Create LabelTextPrefab
-        string labelTextName = "LabelTMPTextPrefab";
-        GameObject labelTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(labelTextName, out labelTextPrefab))
-        {
-            labelTextPrefab = CreatePrefabInstance(baseTextPrefab, labelTextName);
-            TMPro.TextMeshProUGUI labelTextComponent = labelTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
-            labelTextComponent.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
-            labelTextPrefab = SaveAsPrefab(labelTextPrefab);
-        }*/
         #endregion
 
         GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_InputField>("GameObject/UI/Input Field - TextMeshPro", "InputFieldTMPPrefab",
                                     (inputField) =>
                                     {
                                         inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, bodyTextPrefab);
+                                        inputField.textComponent.text = "";
                                         inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
                                     });
         GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>("GameObject/UI/Button - TextMeshPro", "BaseButtonTMPPrefab",
@@ -234,8 +195,25 @@ public class UIPrefabGenerator
                                         dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
                                         dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, bodyTextPrefab);
                                     });
-        GameObject toggleObj = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Toggle", "TogglePrefab");
-        GenerateNonTextUsingPreFabs();
+        GameObject toggleObjNoLabel = CreateOrGetPreFabFromMenuWithChanges<Toggle>("GameObject/UI/Toggle", "ToggleNoLabelPreFab",
+                            (toggle) =>
+                            {
+                                Text label = toggle.GetComponentInChildren<Text>();
+                                if(label!=null)
+                                    GameObject.DestroyImmediate(label.gameObject);
+                            });
+        GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabel, "ToggleTMPPreFab");
+        
+        GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
+        label.transform.SetParent(toggleObjTMP.transform,false);
+        toggleObjTMP = SaveAsPrefab(toggleObjTMP);
+        label = toggleObjTMP.transform.FindChild("Label").gameObject;//.GetComponentInChildren<
+        RevertRectTransformOnly((RectTransform)label.transform, true);
+        PrefabUtility.SavePrefabAsset(toggleObjTMP);
+        
+        //RevertRectTransformOnly((RectTransform)label.transform, toggleObjTMP);
+        GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
+
         Debug.Log("UI Prefabs Generated and Customized!");
         Debug.Log("TextMeshPro UI Prefabs Generated and Customized!");
     }
@@ -263,7 +241,7 @@ public class UIPrefabGenerator
     static GameObject CreateOrGetPreFabFromMenuNoChanges(string menuPath, string nameToAssign)
     {
         GameObject preFab;
-        if (!TryGetPreFabAsset(nameToAssign, out preFab))
+        //if (!TryGetPreFabAsset(nameToAssign, out preFab))
         {
             preFab = CreateMenuObject(menuPath, nameToAssign);
             preFab = SaveAsPrefab(preFab);
@@ -285,9 +263,18 @@ public class UIPrefabGenerator
         if (!TryGetPreFabAsset(nameToAssign, out preFab))
         {
             preFab = CreateMenuObject(menuPath, nameToAssign);
+            if (preFab == null)
+            {
+                Debug.LogError("Failed to create prefab from menu: " + menuPath);
+                return null;
+            }
+
+            T component = preFab.GetComponent<T>();
+            if(component==null)
+                Debug.LogWarning("Unable to find component of type <" + typeof(T) + "> on prefab: " + preFab.name);
+
             if (changesFunction != null)
             {
-                T component = preFab.GetComponent<T>();
                 changesFunction(component);
             }
             preFab = SaveAsPrefab(preFab);
@@ -339,8 +326,8 @@ public class UIPrefabGenerator
         if (original == null) return null;
 
         // Instantiate the new prefab as a replacement
-        GameObject newObj = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-        newObj.transform.SetParent(original.transform.parent, false);
+        GameObject newObj = (GameObject)PrefabUtility.InstantiatePrefab(prefab, original.transform.parent);
+//        newObj.transform.SetParent(original.transform.parent, false);
         newObj.name = original.gameObject.name;
 
         // Copy RectTransform properties
@@ -361,7 +348,33 @@ public class UIPrefabGenerator
         // Return the requested component from the new GameObject
         return newObj.GetComponent<T>();
     }
+    private static GameObject ReplaceGO(GameObject original, GameObject prefab)
+    {
+        if (original == null) return null;
 
+        // Instantiate the new prefab as a replacement
+        GameObject newObj = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        newObj.transform.SetParent(original.transform.parent, false);
+        newObj.name = original.gameObject.name;
+
+        // Copy RectTransform properties
+        RectTransform originalRect = original.GetComponent<RectTransform>();
+        RectTransform newRect = newObj.GetComponent<RectTransform>();
+        if (originalRect != null && newRect != null)
+        {
+            newRect.anchoredPosition = originalRect.anchoredPosition;
+            newRect.sizeDelta = originalRect.sizeDelta;
+            newRect.anchorMin = originalRect.anchorMin;
+            newRect.anchorMax = originalRect.anchorMax;
+            newRect.pivot = originalRect.pivot;
+        }
+
+        // Destroy the original GameObject
+        GameObject.DestroyImmediate(original);
+
+        // Return the requested component from the new GameObject
+        return newObj;
+    }
     /// <summary>
     /// Saves the provided object as a prefab.  The provided object is then Destroyed, and a reference to the new prefab is returned.
     /// </summary>
@@ -369,8 +382,18 @@ public class UIPrefabGenerator
     /// <returns></returns>
     private static GameObject SaveAsPrefab(GameObject obj)
     {
-        GameObject preFab = PrefabUtility.SaveAsPrefabAssetAndConnect(obj, $"{currentPreFabPath}/{obj.name}.prefab", InteractionMode.UserAction);
+        
+        GameObject preFab = null;
+        try
+        {
+            preFab = PrefabUtility.SaveAsPrefabAssetAndConnect(obj, $"{currentPreFabPath}/{obj.name}.prefab", InteractionMode.UserAction);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Exception generated during save of object " + obj.name + ": " + e.Message);
+        }
         Object.DestroyImmediate(obj);
+        RevertRectTransformOnly((RectTransform)preFab.transform);
         return preFab;
     }
 
@@ -381,9 +404,9 @@ public class UIPrefabGenerator
     /// <param name="original"></param>
     /// <param name="variantName"></param>
     /// <returns></returns>
-    private static GameObject CreatePrefabInstance(GameObject original, string variantName)
+    private static GameObject CreatePrefabInstance(GameObject original, string variantName,Transform parent=null)
     {
-        GameObject originalInstance = (GameObject)PrefabUtility.InstantiatePrefab(original);
+        GameObject originalInstance = (GameObject)PrefabUtility.InstantiatePrefab(original,parent);
         originalInstance.name = variantName;
         return originalInstance;
     }
@@ -412,4 +435,49 @@ public class UIPrefabGenerator
             }
         }
     }
+
+    // Static method to revert RectTransform properties of a given object to the base prefab state
+    public static void RevertRectTransformOnly(RectTransform rt, bool skipCheckAndSave=false)
+    {
+        // Ensure this object is part of a prefab variant
+        if (skipCheckAndSave || PrefabUtility.IsPartOfVariantPrefab(rt))//IsPartOfAnyPrefab(rt))
+        {
+            Debug.Log("Reverting RectTransform of object: " + rt.name);
+
+            // Create a serialized object for this GameObject
+            SerializedObject serializedObject = new SerializedObject(rt);
+
+            // Revert the RectTransform properties specifically
+            RevertProperty(serializedObject, "m_LocalPosition");
+            RevertProperty(serializedObject, "m_LocalRotation");
+            RevertProperty(serializedObject, "m_LocalScale");
+            RevertProperty(serializedObject, "m_AnchorMin");
+            RevertProperty(serializedObject, "m_AnchorMax");
+            RevertProperty(serializedObject, "m_AnchoredPosition");
+            RevertProperty(serializedObject, "m_Pivot");
+            RevertProperty(serializedObject, "m_SizeDelta");
+            if(!skipCheckAndSave)
+                PrefabUtility.SavePrefabAsset(rt.gameObject);
+        }
+        else
+        {
+            Debug.Log("NOT Reverting RectTransform of object, because it is NOT a prefab: " + rt.name);
+            //  Debug.LogError("This object is not part of a prefab variant.");
+        }
+    }
+
+    // Helper function to revert the property
+    private static void RevertProperty(SerializedObject serializedObject, string propertyName)
+    {
+        SerializedProperty property = serializedObject.FindProperty(propertyName);
+        if (property != null)
+        {
+            PrefabUtility.RevertPropertyOverride(property, InteractionMode.AutomatedAction);
+        }
+        else
+        {
+            Debug.LogWarning($"Property {propertyName} not found on RectTransform.");
+        }
+    }
+
 }
