@@ -106,9 +106,9 @@ public class UIPrefabGenerator
         // Set a separate path for TextMeshPro prefabs
         EnsureDirectoryExists(PrefabPathTMP);
         currentPreFabPath = PrefabPathTMP;
+        string logStr="\nGeneration start.  prefabPath: " + currentPreFabPath;
 
-
-        #region TestBaseAndVariants
+        #region TextBaseAndVariants
 
         // local Helper function to create text variants
         GameObject CreateTextVariant(string prefabName, GameObject basePrefab, TMPro.TextAlignmentOptions alignment, float fontSize, TMPro.FontWeight fontWeight = FontWeight.Regular, Color? color = null)
@@ -128,7 +128,7 @@ public class UIPrefabGenerator
                     PrefabUtility.RevertObjectOverride(rectTransform, InteractionMode.UserAction);
                 }*/
                 variant = SaveAsPrefab(variant);
-               
+                logStr += "\n Variant of " + basePrefab.name + " created: " + variant.name; 
             }
             return variant;
         }
@@ -143,6 +143,7 @@ public class UIPrefabGenerator
             textComponent.fontSize = 24;
             textComponent.color = Color.black;
             baseTextPrefab = SaveAsPrefab(baseTextPrefab);
+            logStr += "\n BasePrefab created: " + baseTextPrefab.name; 
             forceRecreateTextVariants = true;
         }
 
@@ -173,6 +174,7 @@ public class UIPrefabGenerator
         GameObject labelTextPrefab = CreateTextVariant("FieldLabelTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Bold);
         GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
 
+        Debug.Log("Text variants creation complete.  Log: " + logStr);
         #endregion
 
         GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_InputField>("GameObject/UI/Input Field - TextMeshPro", "InputFieldTMPPrefab",
@@ -386,7 +388,7 @@ public class UIPrefabGenerator
         GameObject preFab = null;
         try
         {
-            preFab = PrefabUtility.SaveAsPrefabAssetAndConnect(obj, $"{currentPreFabPath}/{obj.name}.prefab", InteractionMode.UserAction);
+            preFab = PrefabUtility.SaveAsPrefabAsset(obj, $"{currentPreFabPath}/{obj.name}.prefab");//, InteractionMode.UserAction);
         }
         catch (System.Exception e)
         {
@@ -461,7 +463,7 @@ public class UIPrefabGenerator
         }
         else
         {
-            Debug.Log("NOT Reverting RectTransform of object, because it is NOT a prefab: " + rt.name);
+          //  Debug.Log("NOT Reverting RectTransform of object, because it is NOT a prefab: " + rt.name);
             //  Debug.LogError("This object is not part of a prefab variant.");
         }
     }
