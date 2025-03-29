@@ -135,7 +135,7 @@ public class UIPrefabGenerator
         // Create BaseTextPrefab
         string baseTextName = "BaseTMPTextPrefab";
         GameObject baseTextPrefab;
-        bool forceRecreateTextVariants = false;
+        //bool forceRecreateTextVariants = false;
         if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
         {
             baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName); // we call the menu item to create the base text prefab
@@ -144,7 +144,7 @@ public class UIPrefabGenerator
             textComponent.color = Color.black;
             baseTextPrefab = SaveAsPrefab(baseTextPrefab);
             logStr += "\n BasePrefab created: " + baseTextPrefab.name; 
-            forceRecreateTextVariants = true;
+            //forceRecreateTextVariants = true;
         }
 
         // Large & Prominent Styles
@@ -209,7 +209,7 @@ public class UIPrefabGenerator
         GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
         label.transform.SetParent(toggleObjTMP.transform,false);
         toggleObjTMP = SaveAsPrefab(toggleObjTMP);
-        label = toggleObjTMP.transform.FindChild("Label").gameObject;//.GetComponentInChildren<
+        label = toggleObjTMP.transform.Find("Label").gameObject;//.GetComponentInChildren<
         RevertRectTransformOnly((RectTransform)label.transform, true);
         PrefabUtility.SavePrefabAsset(toggleObjTMP);
         
