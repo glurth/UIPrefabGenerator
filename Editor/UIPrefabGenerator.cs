@@ -15,6 +15,7 @@ public class UIPrefabGenerator
     private static string currentPreFabPath;
     private const string PrefabPath = "Assets/Prefabs/UI";
     private const string PrefabPathTMP = "Assets/Prefabs/UI_TextMeshPro";
+    
 
     [MenuItem("Tools/Generate UI Prefabs")]
     public static void GenerateUIPrefabs()
@@ -132,6 +133,8 @@ public class UIPrefabGenerator
             }
             return variant;
         }
+        
+        
         // Create BaseTextPrefab
         string baseTextName = "BaseTMPTextPrefab";
         GameObject baseTextPrefab;
@@ -170,8 +173,8 @@ public class UIPrefabGenerator
         CreateTextVariant("BuffStatusTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.blue);
 
         // System & Field Styles
-        CreateTextVariant("SystemMessageTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.gray);
-        GameObject labelTextPrefab = CreateTextVariant("FieldLabelTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Bold);
+        CreateTextVariant("SystemMessageTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 18, FontWeight.Bold, Color.gray);
+        GameObject labelTextPrefab = CreateTextVariant("FieldLabelTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 20, FontWeight.Bold);
         GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTMPTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
 
         Debug.Log("Text variants creation complete.  Log: " + logStr);
@@ -183,6 +186,15 @@ public class UIPrefabGenerator
                                         inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, bodyTextPrefab);
                                         inputField.textComponent.text = "";
                                         inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
+                                        //move BG to it's own transform
+                                        GameObject newBackgroundObject = new GameObject("BackgroundImage", new System.Type[] { typeof(RectTransform), typeof(Image) });
+                                        newBackgroundObject.transform.SetParent(inputField.transform, false);
+                                        newBackgroundObject.transform.SetSiblingIndex(0);
+                                        SetRectTransformToFull(newBackgroundObject.transform);
+                                        Image oldBackgroundComponent = inputField.GetComponent<Image>();
+                                        Image newImage = CopyComponent<Image>(oldBackgroundComponent, newBackgroundObject);
+                                        Object.DestroyImmediate(oldBackgroundComponent);
+                                        inputField.targetGraphic = newImage;
                                     });
         GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>("GameObject/UI/Button - TextMeshPro", "BaseButtonTMPPrefab",
                                     (button) =>
@@ -204,15 +216,47 @@ public class UIPrefabGenerator
                                 if(label!=null)
                                     GameObject.DestroyImmediate(label.gameObject);
                             });
+
+        //create toggle WITH label variant
         GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabel, "ToggleTMPPreFab");
-        
+        Graphic togBackground = toggleObjTMP.GetComponent<Toggle>().targetGraphic;
+        SetRectTransformToFull(togBackground.transform);
+
+        ((RectTransform)togBackground.transform).anchorMin = new Vector2(1,.5f);
+        ((RectTransform)togBackground.transform).anchorMax = new Vector2(1,.5f);
+        ((RectTransform)togBackground.transform).pivot = new Vector2(1, 0.5f);
+        ((RectTransform)togBackground.transform).sizeDelta = new Vector2(20, 20);
+
+
+        //((RectTransform)togBackground.transform).pivot = new Vector2(1, 0.5f);
         GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
         label.transform.SetParent(toggleObjTMP.transform,false);
+        SetRectTransformToFull(label.transform);//set to fill parent
+        ((RectTransform)label.transform).offsetMax = new Vector2(-25, 0);
         toggleObjTMP = SaveAsPrefab(toggleObjTMP);
-        label = toggleObjTMP.transform.Find("Label").gameObject;//.GetComponentInChildren<
-        RevertRectTransformOnly((RectTransform)label.transform, true);
-        PrefabUtility.SavePrefabAsset(toggleObjTMP);
-        
+        //PrefabUtility.SavePrefabAsset(toggleObjTMP);
+
+
+
+        //create inputfield with label variant
+        GameObject labeledInputField = CreatePrefabInstance(inputFieldObj, "InputFieldTMPPrefabWithLabel");
+
+        Transform  textArea = FindChildByName(labeledInputField.transform, "Text Area");
+        label = CreatePrefabInstance(labelTextPrefab, "Label");
+        label.transform.SetParent(labeledInputField.transform, false);
+        SetRectTransformToFull(label.transform);
+        ((RectTransform)label.transform).anchorMax = new Vector2(0.5f, 1);
+        ((RectTransform)label.transform).offsetMax = new Vector2(-5, 0);
+        Image background = labeledInputField.GetComponentInChildren<Image>();
+        ((RectTransform)background.transform).anchorMin = new Vector2(0.5f, 0);
+        ((RectTransform)textArea.transform).anchorMin = new Vector2(0.5f, 0);
+        labeledInputField = SaveAsPrefab(labeledInputField);
+        RectTransform baseTransform = (RectTransform)labeledInputField.transform;
+        Vector2 size = baseTransform.sizeDelta;
+        size.x *= 2;
+        baseTransform.sizeDelta = size;
+
+
         //RevertRectTransformOnly((RectTransform)label.transform, toggleObjTMP);
         GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
 
@@ -444,7 +488,7 @@ public class UIPrefabGenerator
         // Ensure this object is part of a prefab variant
         if (skipCheckAndSave || PrefabUtility.IsPartOfVariantPrefab(rt))//IsPartOfAnyPrefab(rt))
         {
-            Debug.Log("Reverting RectTransform of object: " + rt.name);
+          //  Debug.Log("Reverting RectTransform of object: " + rt.name);
 
             // Create a serialized object for this GameObject
             SerializedObject serializedObject = new SerializedObject(rt);
@@ -482,4 +526,43 @@ public class UIPrefabGenerator
         }
     }
 
+    private static void SetRectTransformToFull(Transform transform)
+    {
+        RectTransform rectTransform = transform as RectTransform;
+        if (rectTransform == null) return;
+        // Stretch to fill parent
+        rectTransform.anchorMin = Vector2.zero; // Bottom-left
+        rectTransform.anchorMax = Vector2.one;  // Top-right
+        rectTransform.offsetMin = Vector2.zero; // Remove any offsets
+        rectTransform.offsetMax = Vector2.zero;
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.localScale = Vector3.one;
+        rectTransform.localRotation = Quaternion.identity;
+    }
+    private static T CopyComponent<T>(T original, GameObject destination) where T : Component
+    {
+        if (original == null || destination == null) return null;
+
+        // Create a new component of the same type on the destination GameObject
+        T copiedComponent = destination.AddComponent<T>();
+
+        // Copy properties from original to new component
+        UnityEditorInternal.ComponentUtility.CopyComponent(original);
+        UnityEditorInternal.ComponentUtility.PasteComponentValues(copiedComponent);
+
+        return copiedComponent;
+    }
+    private static Transform FindChildByName(Transform parent, string childName)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == childName)
+                return child;
+
+            Transform found = FindChildByName(child, childName);
+            if (found != null)
+                return found;
+        }
+        return null;
+    }
 }
