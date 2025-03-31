@@ -6,8 +6,8 @@ using TMPro;
 
 public class TwoComponentTypeAdapter<L, M> where L : Component where M : Component
 {
-    public L legacyComponent;
-    public M modernComponent;
+    public readonly L legacyComponent;
+    public readonly M modernComponent;
 
     // Property to check if we're using the modern component
     public bool IsUsingModern => modernComponent != null;
@@ -42,7 +42,7 @@ public class TwoComponentTypeAdapter<L, M> where L : Component where M : Compone
         }
         else
         {
-            Debug.LogWarning($"Creation of {typeof(TwoComponentTypeAdapter<L, M>)} via Component failed. Must be passed a {typeof(L)} or {typeof(M)} type object. Object passed type: {objAsComponent.GetType()}");
+            Debug.LogWarning($"Creation of {this.GetType()} via Component failed. Must be passed a {typeof(L)} or {typeof(M)} type object. Object passed type: {objAsComponent.GetType()}");
         }
     }
 

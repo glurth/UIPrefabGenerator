@@ -14,94 +14,15 @@ public class UIPrefabGenerator
 {
     private static string currentPreFabPath;
     private const string PrefabPath = "Assets/Prefabs/UI";
-    private const string PrefabPathTMP = "Assets/Prefabs/UI_TextMeshPro";
-    
+    private const string PrefabPathTMP = "Assets/Prefabs/UI/TextMeshPro";
+    private const string PrefabPathLegacyText = "Assets/Prefabs/UI/Legacy";
+
 
     [MenuItem("Tools/Generate UI Prefabs")]
     public static void GenerateUIPrefabs()
     {
         GenericGeneratePrefabs(false);
         return;
-        /*
-        // Ensure Prefab Directory Exists
-        EnsureDirectoryExists(PrefabPath);
-        currentPreFabPath = PrefabPath;
-
-        string unityLegacyUIMenuPathPrefix = "GameObject/UI";
-        if (string.Compare(Application.unityVersion, "2022.1.0") >= 0)
-        {
-            Debug.Log("Legacy");
-            unityLegacyUIMenuPathPrefix = "GameObject/UI/Legacy";
-        }
-
-        #region TextBaseAndVariants
-        // Create BaseTextPrefab
-        // GameObject baseTextPrefab = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Text", "BaseTextPrefab");
-        string baseTextName = "BaseTextPrefab";
-        GameObject baseTextPrefab;
-        bool forceRecreateTextVariants = false;
-        if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
-        {
-            baseTextPrefab = CreateMenuObject(unityLegacyUIMenuPathPrefix + "/Text", baseTextName);
-            baseTextPrefab = SaveAsPrefab(baseTextPrefab);
-            forceRecreateTextVariants = true;
-        }
-
-        // Create PlaceholderTextPrefab
-
-        string placeholderTextName = "PlaceholderTextPrefab";
-        GameObject placeholderTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(placeholderTextName, out placeholderTextPrefab))
-        {
-            placeholderTextPrefab = CreatePrefabInstance(baseTextPrefab, placeholderTextName);
-            placeholderTextPrefab.GetComponent<Text>().color = Color.gray;
-            placeholderTextPrefab = SaveAsPrefab(placeholderTextPrefab);
-        }
-        // Create TitleTextPrefab
-        string titleTextName = "TitleTextPrefab";
-        GameObject titleTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(titleTextName, out titleTextPrefab))
-        {
-            titleTextPrefab = CreatePrefabInstance(baseTextPrefab, titleTextName);
-            Text textComponent = titleTextPrefab.GetComponent<Text>();
-            textComponent.alignment = TextAnchor.MiddleCenter;
-            textComponent.fontSize += 2;
-            titleTextPrefab = SaveAsPrefab(titleTextPrefab);
-        }
-
-        // Create LabelTextPrefab
-        string labelTextName = "LabelTextPrefab";
-        GameObject labelTextPrefab;
-        if (forceRecreateTextVariants || !TryGetPreFabAsset(labelTextName, out labelTextPrefab))
-        {
-            labelTextPrefab = CreatePrefabInstance(baseTextPrefab, labelTextName);
-            Text labelTextComponent = labelTextPrefab.GetComponent<Text>();
-            labelTextComponent.alignment = TextAnchor.MiddleLeft;
-            labelTextPrefab = SaveAsPrefab(labelTextPrefab);
-        }
-        #endregion
-
-        GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<InputField>(unityLegacyUIMenuPathPrefix + "/Input Field", "InputFieldPrefab",
-                                    (inputField) =>
-                                    {
-                                        inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, baseTextPrefab);
-                                        inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
-                                    });
-        GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>(unityLegacyUIMenuPathPrefix + "/Button", "BaseButtonPrefab",
-                                (button) =>
-                                {
-                                    Text buttonText = button.gameObject.GetComponentInChildren<Text>();
-                                    ReplaceComponentsGO(buttonText, titleTextPrefab);
-                                });
-        GameObject dropdownObj = CreateOrGetPreFabFromMenuWithChanges<Dropdown>(unityLegacyUIMenuPathPrefix + "/Dropdown", "DropdownPreFab",
-                        (dropdown) =>
-                        {
-                            dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
-                            dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, labelTextPrefab);
-                        });
-
-        GenerateNonTextUsingPreFabs();
-        Debug.Log("UI Prefabs Generated and Customized!");*/
     }
 
     [MenuItem("Tools/Generate TextMeshPro UI Prefabs")]
@@ -109,171 +30,14 @@ public class UIPrefabGenerator
     {
         GenericGeneratePrefabs(true);
         return;
-        /*
-        // Set a separate path for TextMeshPro prefabs
-        EnsureDirectoryExists(PrefabPathTMP);
-        currentPreFabPath = PrefabPathTMP;
-        string logStr="\nGeneration start.  prefabPath: " + currentPreFabPath;
-
-        #region TextBaseAndVariants
-
-        // local Helper function to create text variants
-        GameObject CreateTextVariant(string prefabName, GameObject basePrefab, TMPro.TextAlignmentOptions alignment, float fontSize, TMPro.FontWeight fontWeight = FontWeight.Regular, Color? color = null)
-        {
-            GameObject variant;
-            if (!TryGetPreFabAsset(prefabName, out variant))
-            {
-                variant = CreatePrefabInstance(basePrefab, prefabName);
-                TMPro.TextMeshProUGUI textComponent = variant.GetComponent<TMPro.TextMeshProUGUI>();
-                textComponent.alignment = alignment;
-                textComponent.fontSize = fontSize;
-                textComponent.fontWeight = fontWeight;
-                if (color.HasValue) textComponent.color = color.Value;
-
-                variant = SaveAsPrefab(variant);
-                logStr += "\n Variant of " + basePrefab.name + " created: " + variant.name; 
-            }
-            return variant;
-        
-        }
-        
-        
-        // Create BaseTextPrefab
-        string baseTextName = "BasemodernComponentPrefab";
-        GameObject baseTextPrefab;
-        //bool forceRecreateTextVariants = false;
-        if (!TryGetPreFabAsset(baseTextName, out baseTextPrefab))
-        {
-            baseTextPrefab = CreateMenuObject("GameObject/UI/Text - TextMeshPro", baseTextName); // we call the menu item to create the base text prefab
-            ((RectTransform)baseTextPrefab.transform).anchoredPosition = Vector3.zero;
-            TMPro.TextMeshProUGUI textComponent = baseTextPrefab.GetComponent<TMPro.TextMeshProUGUI>();
-            textComponent.fontSize = 24;
-            textComponent.color = Color.black;
-            baseTextPrefab = SaveAsPrefab(baseTextPrefab);
-            logStr += "\n BasePrefab created: " + baseTextPrefab.name; 
-            //forceRecreateTextVariants = true;
-        }
-
-        // Large & Prominent Styles
-        CreateTextVariant("TitlemodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 32, FontWeight.Bold);
-        CreateTextVariant("SubtitlemodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 28, FontWeight.Bold);
-        CreateTextVariant("NotificationmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 26, FontWeight.Bold);
-
-        // Button Styles
-        GameObject buttonTextPrefab = CreateTextVariant("ButtonmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold);
-        CreateTextVariant("PrimaryButtonmodernComponentPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.white);
-        CreateTextVariant("SecondaryButtonmodernComponentPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.gray);
-        CreateTextVariant("DangerButtonmodernComponentPrefab", buttonTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.red);
-
-        // Body & Dialog Styles
-        GameObject bodyTextPrefab= CreateTextVariant("BodymodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22);
-        CreateTextVariant("NarrativemodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Regular);
-        CreateTextVariant("QuestmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Bold);
-        CreateTextVariant("FlavormodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
-
-        // Tooltip & Status Styles
-        CreateTextVariant("TooltipmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 18, FontWeight.Regular, Color.yellow);
-        CreateTextVariant("HealthStatusmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.green);
-        CreateTextVariant("BuffStatusmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 18, FontWeight.Bold, Color.blue);
-
-        // System & Field Styles
-        CreateTextVariant("SystemMessagemodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 18, FontWeight.Bold, Color.gray);
-        GameObject labelTextPrefab = CreateTextVariant("FieldLabelmodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Right, 20, FontWeight.Bold);
-        GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholdermodernComponentPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
-
-        Debug.Log("Text variants creation complete.  Log: " + logStr);
-        #endregion
-
-        GameObject inputFieldObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_InputField>("GameObject/UI/Input Field - TextMeshPro", "InputFieldTMPPrefab",
-                                    (inputField) =>
-                                    {
-                                        inputField.textComponent = ReplaceComponentsGO(inputField.textComponent, bodyTextPrefab);
-                                        inputField.textComponent.text = "";
-                                        inputField.placeholder = ReplaceComponentsGO(inputField.placeholder, placeholderTextPrefab);
-                                        //move BG to it's own transform
-                                        GameObject newBackgroundObject = new GameObject("BackgroundImage", new System.Type[] { typeof(RectTransform), typeof(Image) });
-                                        newBackgroundObject.transform.SetParent(inputField.transform, false);
-                                        newBackgroundObject.transform.SetSiblingIndex(0);
-                                        SetRectTransformToFull(newBackgroundObject.transform);
-                                        Image oldBackgroundComponent = inputField.GetComponent<Image>();
-                                        Image newImage = CopyComponent<Image>(oldBackgroundComponent, newBackgroundObject);
-                                        Object.DestroyImmediate(oldBackgroundComponent);
-                                        inputField.targetGraphic = newImage;
-                                    });
-        GameObject buttonObj = CreateOrGetPreFabFromMenuWithChanges<Button>("GameObject/UI/Button - TextMeshPro", "BaseButtonTMPPrefab",
-                                    (button) =>
-                                    {
-                                        TMPro.TextMeshProUGUI buttonText = button.gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-                                        buttonText = ReplaceComponentsGO(buttonText, buttonTextPrefab);
-                                        buttonText.text = "Button";
-                                    });
-        GameObject dropdownObj = CreateOrGetPreFabFromMenuWithChanges<TMPro.TMP_Dropdown>("GameObject/UI/Dropdown - TextMeshPro", "DropdownTMPPreFab",
-                                    (dropdown) =>
-                                    {
-                                        dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
-                                        dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, bodyTextPrefab);
-                                    });
-        GameObject toggleObjNoLabel = CreateOrGetPreFabFromMenuWithChanges<Toggle>("GameObject/UI/Toggle", "ToggleNoLabelPreFab",
-                            (toggle) =>
-                            {
-                                Text label = toggle.GetComponentInChildren<Text>();
-                                if(label!=null)
-                                    GameObject.DestroyImmediate(label.gameObject);
-                            });
-
-        //create toggle WITH label variant
-        GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabel, "ToggleTMPPreFab");
-        Graphic togBackground = toggleObjTMP.GetComponent<Toggle>().targetGraphic;
-        SetRectTransformToFull(togBackground.transform);
-
-        ((RectTransform)togBackground.transform).anchorMin = new Vector2(1,.5f);
-        ((RectTransform)togBackground.transform).anchorMax = new Vector2(1,.5f);
-        ((RectTransform)togBackground.transform).pivot = new Vector2(1, 0.5f);
-        ((RectTransform)togBackground.transform).sizeDelta = new Vector2(20, 20);
-
-
-        //((RectTransform)togBackground.transform).pivot = new Vector2(1, 0.5f);
-        GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(toggleObjTMP.transform,false);
-        SetRectTransformToFull(label.transform);//set to fill parent
-        ((RectTransform)label.transform).offsetMax = new Vector2(-25, 0);
-        toggleObjTMP = SaveAsPrefab(toggleObjTMP);
-        //PrefabUtility.SavePrefabAsset(toggleObjTMP);
-
-
-
-        //create inputfield with label variant
-        GameObject labeledInputField = CreatePrefabInstance(inputFieldObj, "InputFieldTMPPrefabWithLabel");
-
-        Transform  textArea = FindChildByName(labeledInputField.transform, "Text Area");
-        label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(labeledInputField.transform, false);
-        SetRectTransformToFull(label.transform);
-        ((RectTransform)label.transform).anchorMax = new Vector2(0.5f, 1);
-        ((RectTransform)label.transform).offsetMax = new Vector2(-5, 0);
-        Image background = labeledInputField.GetComponentInChildren<Image>();
-        ((RectTransform)background.transform).anchorMin = new Vector2(0.5f, 0);
-        ((RectTransform)textArea.transform).anchorMin = new Vector2(0.5f, 0);
-        labeledInputField = SaveAsPrefab(labeledInputField);
-        RectTransform baseTransform = (RectTransform)labeledInputField.transform;
-        Vector2 size = baseTransform.sizeDelta;
-        size.x *= 2;
-        baseTransform.sizeDelta = size;
-
-
-        //RevertRectTransformOnly((RectTransform)label.transform, toggleObjTMP);
-        GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
-
-        Debug.Log("UI Prefabs Generated and Customized!");
-        Debug.Log("TextMeshPro UI Prefabs Generated and Customized!");
-        */
     }
 
 
     private static void GenericGeneratePrefabs(bool useTMP)
     {
-        string preFabPathToUse = useTMP ? PrefabPathTMP : PrefabPath;
+        string preFabPathToUse = useTMP ? PrefabPathTMP : PrefabPathLegacyText;
         // Set a separate path for TextMeshPro prefabs
+        EnsureDirectoryExists(PrefabPath);
         EnsureDirectoryExists(preFabPathToUse);
         EnsureDirectoryExists(preFabPathToUse+"/TextVariants");
         currentPreFabPath = preFabPathToUse;
@@ -281,7 +45,7 @@ public class UIPrefabGenerator
         string unityLegacyUIMenuPathPrefix = "GameObject/UI";
         if (string.Compare(Application.unityVersion, "2022.1.0") >= 0)
         {
-            Debug.Log("Legacy");
+           // Debug.Log("Legacy");
             unityLegacyUIMenuPathPrefix = "GameObject/UI/Legacy";
         }
         #region TextBaseAndVariants
@@ -294,7 +58,6 @@ public class UIPrefabGenerator
             {
                 variant = CreatePrefabInstance(basePrefab, prefabName);
                 GenericTextComponent textComponent = GenericTextComponent.GetComponent(variant);
-                //TMPro.TextMeshProUGUI textComponent = variant.GetComponent<TMPro.TextMeshProUGUI>();
                 textComponent.alignmentTMP = alignment;
                 textComponent.fontSize = fontSize;
                 textComponent.fontWeight = fontWeight;
@@ -353,9 +116,12 @@ public class UIPrefabGenerator
         CreateTextVariant("SystemMessageTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Regular, Color.gray);
 
         GameObject labelTextPrefab = CreateTextVariant("FieldLabelTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Right, 20, FontWeight.Bold);
+        SetRectTransformToFull(labelTextPrefab.transform);//set to fill parent
+        ((RectTransform)labelTextPrefab.transform).anchorMax= new Vector2(0.5f,1);
+        ((RectTransform)labelTextPrefab.transform).offsetMax = new Vector2(-5, 0);
         GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
 
-        Debug.Log("Text variants creation complete.  Log: " + logStr);
+       // Debug.Log("Text variants creation complete.  Log: " + logStr);
         #endregion
 
 
@@ -422,10 +188,7 @@ public class UIPrefabGenerator
                                     (button) =>
                                     {
                                         GenericTextComponent buttonText = GenericTextComponent.GetComponentInChildren(button.gameObject);
-                                        //TMPro.TextMeshProUGUI buttonText = button.gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-
                                         buttonText = GenericTextComponent.GetComponent(ReplaceGO(buttonText.gameObject, buttonTextPrefab));
-                                       // buttonText = ReplaceComponentsGO(buttonText, buttonTextPrefab);
                                         buttonText.text = "Button";
                                     });
 
@@ -451,20 +214,37 @@ public class UIPrefabGenerator
                                 dropdownField.itemText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.itemText.gameObject, bodyTextPrefab));
                                 //dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, bodyTextPrefab);
                             });
-        ////////////////
-        //create toggle NO label base
-        ////////////////
-        Toggle toggleObjNoLabel = CreateOrGetPreFabFromMenuWithChanges<Toggle>("GameObject/UI/Toggle", "ToggleNoLabelPreFab",
-                            (toggle) =>
-                            {
-                                Text label = toggle.GetComponentInChildren<Text>();
-                                if (label != null)
-                                    GameObject.DestroyImmediate(label.gameObject);
-                            });
+
+        currentPreFabPath = PrefabPath;
+        
+        GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
+        GameObject toggleObjNoLabelGameObject;
+        TryGetPreFabAsset("TogglePreFab", out toggleObjNoLabelGameObject);
+        GameObject sliderObjNoLabelGameObject;
+        TryGetPreFabAsset("SliderPrefab", out sliderObjNoLabelGameObject);
+
+        currentPreFabPath = preFabPathToUse;
+
+        
+        GameObject AddLabelAndMakeNewPreFab(GameObject basePrefab)
+        {
+            string newPreFabName = basePrefab.name + "Labeled";
+            GameObject labeledPreFab = CreatePrefabInstance(basePrefab, newPreFabName);
+            RectTransform root = (RectTransform)labeledPreFab.transform;
+            root.sizeDelta *= new Vector2(2, 1);//double width
+            foreach (RectTransform childTransform in root)
+            {
+                childTransform.anchorMin = new Vector2(0.5f, childTransform.anchorMin.y);
+            }
+            CreatePrefabInstance(labelTextPrefab, "Label", root);
+            labeledPreFab = SaveAsPrefab(labeledPreFab);
+            return labeledPreFab;
+        }
+
         ////////////////
         //create toggle WITH label variant
         ////////////////
-        GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabel.gameObject, "ToggleTMPPreFab");
+        GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabelGameObject, "ToggleTMPPreFab");
         Graphic togBackground = toggleObjTMP.GetComponent<Toggle>().targetGraphic;
         SetRectTransformToFull(togBackground.transform);
 
@@ -475,7 +255,7 @@ public class UIPrefabGenerator
 
 
         GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(toggleObjTMP.transform, false);
+        label.transform.SetParent(toggleObjTMP.transform, true);
         SetRectTransformToFull(label.transform);//set to fill parent
         ((RectTransform)label.transform).offsetMax = new Vector2(-25, 0);
         toggleObjTMP = SaveAsPrefab(toggleObjTMP);
@@ -484,6 +264,8 @@ public class UIPrefabGenerator
         ////////////////
         //create inputfield with label variant
         ////////////////
+        
+        /*
         string labledInputFieldName = "InputFieldTMPPrefabWithLabel";
         if (!useTMP)
         {
@@ -497,9 +279,9 @@ public class UIPrefabGenerator
         if(!useTMP)
             textArea=FindDescendantByName(labeledInputField.transform, "Text (Legacy)");
         label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(labeledInputField.transform, false);
-        SetRectTransformToFull(label.transform);
-        ((RectTransform)label.transform).anchorMax = new Vector2(0.5f, 1);
+        label.transform.SetParent(labeledInputField.transform, true);
+        //SetRectTransformToFull(label.transform);
+        //((RectTransform)label.transform).anchorMax = new Vector2(0.5f, 1);
         ((RectTransform)label.transform).offsetMax = new Vector2(-5, 0);
         Image background = labeledInputField.GetComponentInChildren<Image>();
         ((RectTransform)background.transform).anchorMin = new Vector2(0.5f, 0);
@@ -517,25 +299,34 @@ public class UIPrefabGenerator
             ((RectTransform)placeholderArea).anchorMin = new Vector2(0.5f, 0);
         }
 
-
-        //RevertRectTransformOnly((RectTransform)label.transform, toggleObjTMP);
+        currentPreFabPath = PrefabPath;
         GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
+        currentPreFabPath = preFabPathToUse;
+        */
+        AddLabelAndMakeNewPreFab(inputFieldObj);
+        AddLabelAndMakeNewPreFab(sliderObjNoLabelGameObject);
 
         Debug.Log("UI Prefabs Generated and Customized!");
-        Debug.Log("TextMeshPro UI Prefabs Generated and Customized!");
     }
 
     private static void GenerateNonTextUsingPreFabs()
     {
-        GameObject panelObj = CreatePreFabFromMenuNoChanges("GameObject/UI/Panel", "PanelPrefab");
-        GameObject scrollbarObj = CreatePreFabFromMenuNoChanges("GameObject/UI/Scrollbar", "ScrollbarPrefab");
+        GameObject panelObj = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Panel", "PanelPrefab");
+        GameObject scrollbarObj = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Scrollbar", "ScrollbarPrefab");
         ScrollRect scrollViewObj = CreateOrGetPreFabFromMenuWithChanges<ScrollRect>("GameObject/UI/Scroll View", "ScrollViewPrefab",
                 (scrollRect) =>
                 {
                     scrollRect.horizontalScrollbar = ReplaceComponentsGO(scrollRect.horizontalScrollbar, scrollbarObj);
                     scrollRect.verticalScrollbar = ReplaceComponentsGO(scrollRect.verticalScrollbar, scrollbarObj);
                 });
-        GameObject sliderObj = CreatePreFabFromMenuNoChanges("GameObject/UI/Slider", "SliderPrefab");
+        GameObject sliderObj = CreateOrGetPreFabFromMenuNoChanges("GameObject/UI/Slider", "SliderPrefab");
+        Toggle toggleObjNoLabel = CreateOrGetPreFabFromMenuWithChanges<Toggle>("GameObject/UI/Toggle", "TogglePreFab",
+                    (toggle) =>
+                    {
+                        Text label = toggle.GetComponentInChildren<Text>();
+                        if (label != null)
+                            GameObject.DestroyImmediate(label.gameObject);
+                    });
     }
 
     /// <summary>
@@ -553,6 +344,12 @@ public class UIPrefabGenerator
             preFab = SaveAsPrefab(preFab);
         }
         return preFab;
+    }
+
+    static GameObject CreateOrGetPreFabFromMenuNoChanges(string menuPath, string nameToAssign)
+    {
+        if (TryGetPreFabAsset(nameToAssign, out GameObject foundPreFab)) return foundPreFab;
+        return CreatePreFabFromMenuNoChanges(menuPath, nameToAssign);
     }
     /// <summary>
     /// Combines functions required to check for existing, and if not found create a new prefab using the menu item.
