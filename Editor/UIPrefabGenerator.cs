@@ -103,23 +103,23 @@ public class UIPrefabGenerator
         ////////////////
 
         // Large & Prominent Styles
-        GameObject titleTextPrefab = CreateTextVariant("TitleTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 32, FontWeight.Bold);
-        CreateTextVariant("SubtitleTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 28, FontWeight.Bold);
-        GameObject bodyTextPrefab = CreateTextVariant("BodyTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 22);
+        GameObject titleTextPrefab = CreateTextVariant("TitleTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold);
+        CreateTextVariant("SubtitleTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Center, 18, FontWeight.Bold);
+        GameObject bodyTextPrefab = CreateTextVariant("BodyTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 14);
         // Button Styles
-        GameObject buttonTextPrefab = CreateTextVariant("ButtonTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold);
-        CreateTextVariant("TooltipTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 18, FontWeight.Regular, Color.yellow);
-        CreateTextVariant("TinyTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 12, FontWeight.Regular);
+        GameObject buttonTextPrefab = CreateTextVariant("ButtonTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Center, 18, FontWeight.Bold);
+        CreateTextVariant("TooltipTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 12, FontWeight.Regular, Color.yellow);
+        CreateTextVariant("TinyTextPrefab", baseTextPrefab, TMPro.TextAlignmentOptions.Left, 10, FontWeight.Regular);
 
         // System & Field Styles
-        CreateTextVariant("SystemMessageTitlePrefab", titleTextPrefab, TMPro.TextAlignmentOptions.Center, 32, FontWeight.Bold, Color.red);
-        CreateTextVariant("SystemMessageTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 22, FontWeight.Regular, Color.gray);
+        CreateTextVariant("SystemMessageTitlePrefab", titleTextPrefab, TMPro.TextAlignmentOptions.Center, 24, FontWeight.Bold, Color.red);
+        CreateTextVariant("SystemMessageTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 14, FontWeight.Regular, Color.gray);
 
-        GameObject labelTextPrefab = CreateTextVariant("FieldLabelTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Right, 20, FontWeight.Bold);
+        GameObject labelTextPrefab = CreateTextVariant("FieldLabelTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Right, 14, FontWeight.Bold);
         SetRectTransformToFull(labelTextPrefab.transform);//set to fill parent
         ((RectTransform)labelTextPrefab.transform).anchorMax= new Vector2(0.5f,1);
         ((RectTransform)labelTextPrefab.transform).offsetMax = new Vector2(-5, 0);
-        GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 20, FontWeight.Regular, Color.gray);
+        GameObject placeholderTextPrefab = CreateTextVariant("InputPlaceholderTextPrefab", bodyTextPrefab, TMPro.TextAlignmentOptions.Left, 14, FontWeight.Regular, Color.gray);
 
        // Debug.Log("Text variants creation complete.  Log: " + logStr);
         #endregion
@@ -210,11 +210,12 @@ public class UIPrefabGenerator
                             {
                                 GenericDropdownComponent dropdownField = new GenericDropdownComponent(dropdown);
                                 dropdownField.captionText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.captionText.gameObject, bodyTextPrefab));
+                                dropdownField.captionText.name = "SelectionText";
                                 RectTransform captionRect = ((RectTransform)dropdownField.captionText.transform);
                                 captionRect.offsetMin = new Vector2(captionRect.offsetMin.x, 2); 
                                 captionRect.offsetMax = new Vector2(captionRect.offsetMax.x, -2);
                                 dropdownField.itemText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.itemText.gameObject, bodyTextPrefab));
-                                dropdownField.itemText.name = "SelectionText";
+                                
                                 RectTransform itemTextTransform = (RectTransform)dropdownField.itemText.transform;
                                 itemTextTransform.offsetMin = new Vector2(itemTextTransform.offsetMin.x, 2);
                                 itemTextTransform.offsetMax = new Vector2(itemTextTransform.offsetMax.x, -2);
