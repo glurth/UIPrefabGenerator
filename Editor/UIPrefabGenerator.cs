@@ -32,7 +32,7 @@ public class UIPrefabGenerator
         return;
     }
 
-
+    //one of main class functions.  specifies, in code the creation of all prefabs via in-code accessed unity editor menu items where appropriate, and as variants of other prefabs
     private static void GenericGeneratePrefabs(bool useTMP)
     {
         string preFabPathToUse = useTMP ? PrefabPathTMP : PrefabPathLegacyText;
@@ -209,10 +209,24 @@ public class UIPrefabGenerator
                             (dropdown) =>
                             {
                                 GenericDropdownComponent dropdownField = new GenericDropdownComponent(dropdown);
-                                dropdownField.captionText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.captionText.gameObject, labelTextPrefab));
-                                //dropdown.captionText = ReplaceComponentsGO(dropdown.captionText, labelTextPrefab);
+                                dropdownField.captionText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.captionText.gameObject, bodyTextPrefab));
+                                RectTransform captionRect = ((RectTransform)dropdownField.captionText.transform);
+                                captionRect.offsetMin = new Vector2(captionRect.offsetMin.x, 2); 
+                                captionRect.offsetMax = new Vector2(captionRect.offsetMax.x, -2);
                                 dropdownField.itemText = GenericTextComponent.GetComponent(ReplaceGO(dropdownField.itemText.gameObject, bodyTextPrefab));
-                                //dropdown.itemText = ReplaceComponentsGO(dropdown.itemText, bodyTextPrefab);
+                                dropdownField.itemText.name = "SelectionText";
+                                RectTransform itemTextTransform = (RectTransform)dropdownField.itemText.transform;
+                                itemTextTransform.offsetMin = new Vector2(itemTextTransform.offsetMin.x, 2);
+                                itemTextTransform.offsetMax = new Vector2(itemTextTransform.offsetMax.x, -2);
+                                //move bg to it's own child object
+                                GameObject backgroundGO= new GameObject("Background", typeof(Image));
+                                backgroundGO.transform.SetParent(dropdown.transform, false);
+                                SetRectTransformToFull(backgroundGO.transform);
+                                Image oldBG = (Image)dropdownField.targetGraphic;
+                                Image newBG= CopyComponent<Image>(oldBG, backgroundGO);
+                                newBG.transform.SetSiblingIndex(0);
+                                dropdownField.targetGraphic=newBG;
+                                Component.DestroyImmediate(oldBG);
                             });
 
         currentPreFabPath = PrefabPath;
@@ -226,85 +240,40 @@ public class UIPrefabGenerator
         currentPreFabPath = preFabPathToUse;
 
         
-        GameObject AddLabelAndMakeNewPreFab(GameObject basePrefab)
-        {
-            string newPreFabName = basePrefab.name + "Labeled";
-            GameObject labeledPreFab = CreatePrefabInstance(basePrefab, newPreFabName);
-            RectTransform root = (RectTransform)labeledPreFab.transform;
-            root.sizeDelta *= new Vector2(2, 1);//double width
-            foreach (RectTransform childTransform in root)
-            {
-                childTransform.anchorMin = new Vector2(0.5f, childTransform.anchorMin.y);
-            }
-            CreatePrefabInstance(labelTextPrefab, "Label", root);
-            labeledPreFab = SaveAsPrefab(labeledPreFab);
-            return labeledPreFab;
-        }
+
 
         ////////////////
         //create toggle WITH label variant
         ////////////////
-        GameObject toggleObjTMP = CreatePrefabInstance(toggleObjNoLabelGameObject, "ToggleTMPPreFab");
-        Graphic togBackground = toggleObjTMP.GetComponent<Toggle>().targetGraphic;
-        SetRectTransformToFull(togBackground.transform);
-
-        ((RectTransform)togBackground.transform).anchorMin = new Vector2(1, .5f);
-        ((RectTransform)togBackground.transform).anchorMax = new Vector2(1, .5f);
-        ((RectTransform)togBackground.transform).pivot = new Vector2(1, 0.5f);
-        ((RectTransform)togBackground.transform).sizeDelta = new Vector2(20, 20);
-
+        
+        string toggleWithLabelPreFabName = "TogglePreFabTMPLabeled";
+        if (!useTMP)
+        {
+            toggleWithLabelPreFabName = "TogglePreFabLabeled";
+        }
+        GameObject toggleObj = CreatePrefabInstance(toggleObjNoLabelGameObject, toggleWithLabelPreFabName);
+        Graphic togBackground = toggleObj.GetComponent<Toggle>().targetGraphic;
+        RectTransform bgRect = ((RectTransform)togBackground.transform);
+        SetRectTransformToFull(bgRect);
+        bgRect.anchorMin = new Vector2(1, .5f);
+        bgRect.anchorMax = new Vector2(1, .5f);
+        bgRect.pivot = new Vector2(1, 0.5f);
+        bgRect.sizeDelta = new Vector2(20, 20);
 
         GameObject label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(toggleObjTMP.transform, true);
-        SetRectTransformToFull(label.transform);//set to fill parent
+        label.transform.SetParent(toggleObj.transform, true);
+        SetRectTransformToFull(label.transform);//set to fill parent, minus space on right for toggle
         ((RectTransform)label.transform).offsetMax = new Vector2(-25, 0);
-        toggleObjTMP = SaveAsPrefab(toggleObjTMP);
+        toggleObj = SaveAsPrefab(toggleObj);
 
 
         ////////////////
-        //create inputfield with label variant
+        //create inputfield and slider with label variants: 50%/50% label/control width
         ////////////////
+        AddLabelAndMakeNewPreFab(inputFieldObj, labelTextPrefab);
+        AddLabelAndMakeNewPreFab(sliderObjNoLabelGameObject, labelTextPrefab);
+        AddLabelAndMakeNewPreFab(dropdownObj, labelTextPrefab);
         
-        /*
-        string labledInputFieldName = "InputFieldTMPPrefabWithLabel";
-        if (!useTMP)
-        {
-            labledInputFieldName = "InputFieldPrefabWithLabel";
-        }
-
-        GameObject labeledInputField = CreatePrefabInstance(inputFieldObj, labledInputFieldName);
-
-
-        Transform textArea=FindDescendantByName(labeledInputField.transform, "Text Area");
-        if(!useTMP)
-            textArea=FindDescendantByName(labeledInputField.transform, "Text (Legacy)");
-        label = CreatePrefabInstance(labelTextPrefab, "Label");
-        label.transform.SetParent(labeledInputField.transform, true);
-        //SetRectTransformToFull(label.transform);
-        //((RectTransform)label.transform).anchorMax = new Vector2(0.5f, 1);
-        ((RectTransform)label.transform).offsetMax = new Vector2(-5, 0);
-        Image background = labeledInputField.GetComponentInChildren<Image>();
-        ((RectTransform)background.transform).anchorMin = new Vector2(0.5f, 0);
-        ((RectTransform)textArea.transform).anchorMin = new Vector2(0.5f, 0);
-
-
-        labeledInputField = SaveAsPrefab(labeledInputField);
-        RectTransform baseTransform = (RectTransform)labeledInputField.transform;
-        Vector2 size = baseTransform.sizeDelta;
-        size.x *= 2;
-        baseTransform.sizeDelta = size;
-        if (!useTMP)
-        {
-            Transform placeholderArea = FindDescendantByName(labeledInputField.transform, "Placeholder");
-            ((RectTransform)placeholderArea).anchorMin = new Vector2(0.5f, 0);
-        }
-
-        currentPreFabPath = PrefabPath;
-        GenerateNonTextUsingPreFabs();//same w/ or w/o textMeshPro
-        currentPreFabPath = preFabPathToUse;
-        */
-        AddLabelAndMakeNewPreFab(inputFieldObj);
-        AddLabelAndMakeNewPreFab(sliderObjNoLabelGameObject);
 
         Debug.Log("UI Prefabs Generated and Customized!");
     }
@@ -329,6 +298,27 @@ public class UIPrefabGenerator
                     });
     }
 
+    private static GameObject AddLabelAndMakeNewPreFab(GameObject basePrefab,GameObject labelTextPrefab)
+    {
+        string newPreFabName = basePrefab.name + "Labeled";
+        GameObject labeledPreFab = CreatePrefabInstance(basePrefab, newPreFabName);
+        RectTransform root = (RectTransform)labeledPreFab.transform;
+        foreach (RectTransform childTransform in root)
+        {
+            if(childTransform.anchorMin.x==0)
+                childTransform.anchorMin = new Vector2(0.5f, childTransform.anchorMin.y);
+        }
+        CreatePrefabInstance(labelTextPrefab, "FieldLabel", root);
+
+
+        labeledPreFab = SaveAsPrefab(labeledPreFab);//reverts transfrom
+
+        root = (RectTransform)labeledPreFab.transform;
+        root.sizeDelta *= new Vector2(2, 1);//double width
+        //PrefabUtility.ApplyPrefabInstance(labeledPreFab, InteractionMode.AutomatedAction);
+        labeledPreFab = SaveAsPrefabNoRevert(labeledPreFab);
+        return labeledPreFab;
+    }
     /// <summary>
     /// Combines functions required to check for existing, and if not found create a new prefab using the menu item.
     /// </summary>
@@ -338,11 +328,11 @@ public class UIPrefabGenerator
     static GameObject CreatePreFabFromMenuNoChanges(string menuPath, string nameToAssign)
     {
         GameObject preFab;
-        //if (!TryGetPreFabAsset(nameToAssign, out preFab))
-        {
-            preFab = CreateMenuObject(menuPath, nameToAssign);
-            preFab = SaveAsPrefab(preFab);
-        }
+        preFab = CreateMenuObject(menuPath, nameToAssign);
+        RectTransform rt = preFab.transform as RectTransform;
+        if (rt != null)
+            rt.anchoredPosition = Vector3.zero;
+        preFab = SaveAsPrefab(preFab);
         return preFab;
     }
 
@@ -512,7 +502,25 @@ public class UIPrefabGenerator
         RevertRectTransformOnly((RectTransform)preFab.transform);
         return preFab;
     }
+    private static GameObject SaveAsPrefabNoRevert(GameObject obj, string subFolder = null)
+    {
 
+        GameObject preFab = null;
+        string path = $"{currentPreFabPath}/{obj.name}.prefab";
+        if (subFolder != null)
+            path = $"{currentPreFabPath}/{subFolder}/{obj.name}.prefab";
+        try
+        {
+            preFab = PrefabUtility.SaveAsPrefabAsset(obj, path);//, InteractionMode.UserAction);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Exception generated during save of object " + obj.name + ": " + e.Message);
+        }
+        Object.DestroyImmediate(obj);
+        
+        return preFab;
+    }
 
     /// <summary>
     /// creates a scene instance of the prefab- it will still need to be saved as a new prefab using SaveAsPrefab, to create a variant prefab.
@@ -609,6 +617,7 @@ public class UIPrefabGenerator
         rectTransform.localScale = Vector3.one;
         rectTransform.localRotation = Quaternion.identity;
     }
+    //creates or updates  component of type T on destination, with data of original.
     private static T CopyComponent<T>(T original, GameObject destination) where T : Component
     {
         if (original == null || destination == null) return null;

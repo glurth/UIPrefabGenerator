@@ -56,9 +56,18 @@ public class TwoComponentTypeAdapter<L, M> where L : Component where M : Compone
     public Transform transform => IsUsingModern ? modernComponent.transform : legacyComponent.transform;
     // Access the gameObject, using whichever component is set
     public GameObject gameObject => IsUsingModern ? modernComponent.gameObject : legacyComponent.gameObject;
+    public string name
+    {
+        get { return IsUsingModern ? modernComponent.name : legacyComponent.name; }
+        set
+        {
+            if (IsUsingModern) modernComponent.name = value;
+            else legacyComponent.name = value;
+        }
+    }
 
     // Add the appropriate component to the GameObject
-    public static TwoComponentTypeAdapter<L, M> AddComponent(GameObject objectToAddTo, bool useModern)
+            public static TwoComponentTypeAdapter<L, M> AddComponent(GameObject objectToAddTo, bool useModern)
     {
         if (useModern)
             return new TwoComponentTypeAdapter<L, M>(objectToAddTo.AddComponent<M>());
@@ -252,9 +261,9 @@ public class GenericInputFieldComponent:TwoComponentTypeAdapter<InputField, TMP_
         set { if (IsUsingModern) modernComponent.placeholder = value.modernComponent; else legacyComponent.placeholder = value.legacyComponent; }
     }
 }
+
 public class GenericDropdownComponent: TwoComponentTypeAdapter<Dropdown, TMP_Dropdown>
 {
-
     public GenericDropdownComponent(Text legacyComponent) : base(legacyComponent) { }
     public GenericDropdownComponent(TextMeshProUGUI modernComponent) : base(modernComponent) { }
     public GenericDropdownComponent(Component inputFieldAsComponent) : base(inputFieldAsComponent) { }
@@ -305,6 +314,11 @@ public class GenericDropdownComponent: TwoComponentTypeAdapter<Dropdown, TMP_Dro
     {
         get => IsUsingModern ? new GenericTextComponent(modernComponent.itemText) : new GenericTextComponent(legacyComponent.itemText);
         set { if (IsUsingModern) modernComponent.itemText = value.modernComponent; else legacyComponent.itemText = value.legacyComponent; }
+    }
+    public Graphic targetGraphic
+    {
+        get => IsUsingModern ? modernComponent.targetGraphic : legacyComponent.targetGraphic;
+        set { if (IsUsingModern) modernComponent.targetGraphic = value; else legacyComponent.targetGraphic = value; }
     }
 }
 
