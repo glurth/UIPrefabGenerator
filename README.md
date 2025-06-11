@@ -1,7 +1,7 @@
 # UIPrefabGenerator
 This Unity script allows you to automatically generate reusable and customizable UI prefabs for your project. It supports both standard Unity UI and TextMeshPro UI components. The prefabs are saved in the specified Asset folder and are designed to ensure consistency across scenes, reducing manual updates.
 
-## Instllation
+## Installation
 
 In the unity editor, package manager, click to add a package from a git url:  https://github.com/glurth/UIPrefabGenerator.git
 
