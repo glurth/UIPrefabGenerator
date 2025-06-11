@@ -1,6 +1,10 @@
 # UIPrefabGenerator
 This Unity script allows you to automatically generate reusable and customizable UI prefabs for your project. It supports both standard Unity UI and TextMeshPro UI components. The prefabs are saved in the specified Asset folder and are designed to ensure consistency across scenes, reducing manual updates.
 
+## Instllation
+
+In the unity editor, package manager, click to add a package from a git url:  https://github.com/glurth/UIPrefabGenerator.git
+
 ## Usage
 Either option may be used, but you probably don't want to use both.
 
@@ -18,24 +22,17 @@ The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, 
 
 ### Prefab-Based UI Composition Workflow
 
->**Overview:**
->This workflow involves creating reusable prefabs for Unity UI components. These prefabs act as templates that are instantiated and customized as needed. Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
->Variants in Unity are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.
+**Overview:**
+This workflow involves creating reusable prefabs for Unity UI components. These prefabs act as templates that are instantiated and customized as needed. Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
+Variants in Unity are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.
 
->**Workflow Steps:**
->1. **Design Base Prefabs**: Build foundational UI prefabs for common elements (e.g., buttons, panels, text fields). [This is what this package is good for.]
->2. **Create Variants**: Use prefab variants to customize specific properties or styles while retaining a link to the base prefab for easier updates.
->3. **Organize Prefabs**: Optionally, store prefabs in a structured hierarchy (e.g., categorized folders) for easy access and management.
->4. **Integrate into Canvas**: Populate your Unity Canvas by instantiating prefabs instead of building UI elements directly in the scene.
->5. **Update with Consistency**: Modify the base prefab to propagate changes across all instances and variants, simplifying large-scale updates.
-
->**Advantages:**
->- **Consistency**: Ensures a uniform look and feel across the UI, reducing design discrepancies.
->- **Efficiency**: Saves time by avoiding repetitive recreation of UI elements.
->- **Flexibility with Variants**: Allows for quick customization while maintaining a connection to the original prefab.
->- **Ease of Maintenance**: Updating the base prefab automatically reflects changes across all instances and variants.
->- **Collaboration-Friendly**: Teams can work with pre-defined prefabs, reducing the risk of unaligned designs or functionality.
->- **Scalability**: Facilitates faster iteration and expansion of UI as the project grows.
+**Advantages:**
+- **Consistency**: Ensures a uniform look and feel across the UI, reducing design discrepancies.
+- **Efficiency**: Saves time by avoiding repetitive recreation of UI elements.
+- **Flexibility with Variants**: Allows for quick customization while maintaining a connection to the original prefab.
+- **Ease of Maintenance**: Updating the base prefab automatically reflects changes across all instances and variants.
+- **Collaboration-Friendly**: Teams can work with pre-defined prefabs, reducing the risk of unaligned designs or functionality.
+- **Scalability**: Facilitates faster iteration and expansion of UI as the project grows.
 
 ## Features
 - **Automatic Prefab Generation**: Generates prefabs for commonly used UI elements such as Text, Buttons, Input Fields, Dropdowns, and more.
@@ -44,15 +41,11 @@ The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, 
 - **Reusable Components**: Changes made to the base prefab will propagate across all variants and instances, ensuring uniformity in the UI.
 
 ## How It Works
-1. **Prefab Paths**: The prefabs are stored in two main directories:
-   - Standard UI prefabs: `Assets/Prefabs/UI`
-   - TextMeshPro UI prefabs: `Assets/Prefabs/UI_TextMeshPro`
+1. **Base Prefabs**: Base UI prefabs are created and saved in the appropriate directory. These base prefabs serve as templates for creating variant prefabs.  Those UI Controls that use other controls (like an ``InputField`` uses a ``Text``), will have those internal control replaced with a prefab (or variant). This will allow changes to the base text prefabs to work for say.. Buttons.
 
-2. **Base Prefabs**: Base UI prefabs are created and saved in the appropriate directory. These base prefabs serve as templates for creating variant prefabs.  Those UI Controls that use other controls (like an ``InputField`` uses a ``Text``), will have those internal control replaced with a prefab (or variant). This will allow changes to the base text prefabs to work for say.. Buttons.
+2. **Prefab Variants**: Prefab variants such as `PlaceholderTextPrefab`, `TitleTextPrefab`, `LabelTextPrefab` are automatically generated from the base prefab with specific changes (e.g., font size, alignment, color).  Custom prefab Variants can of course be createdat any time.
 
-3. **Prefab Variants**: Prefab variants such as `PlaceholderTextPrefab`, `TitleTextPrefab`, `LabelTextPrefab` are automatically generated from the base prefab with specific changes (e.g., font size, alignment, color).  Custom prefab Variants can of course be createdat any time.
-
-4. **UI Components**: The script automatically generates and customizes various UI elements like:
+3. **UI Components**: The script automatically generates and customizes various UI elements like:
    - `InputField`
    - `Button`
    - `Dropdown`
@@ -93,9 +86,10 @@ After running the generator, your project will contain a set of UI prefabs organ
   - `TooltipTextPrefab`, `TinyTextPrefab`, `FieldLabelTextPrefab`, etc.
 
 ### 4. **Relationships and Inheritance**
-- **Prefab Variants are children of their respective base prefabs.**
-- **Changing a property on the base prefab (not overridden in a variant) will update all variants.**
-- **If you override a property in a variant, future base changes to that property won’t propagate to that variant.**
+- Prefab Variants are children of their respective base prefabs.
+- Changing a property on the base prefab (not overridden in a variant) will update all variants.
+- If you override a property in a variant, future base changes to that property won’t propagate to that variant.
+- Prefabs in Prefabs: some prefabs like an InputField, will use other prefabs like Text displays as part of its composition.  Note that these instances of the used prefab may be assigned custom property modifications.
 
 ### 5. **How to Use the Prefabs**
 - **Direct Use:**  
