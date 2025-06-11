@@ -125,8 +125,7 @@ If you’re unsure which prefab to use, start with a base prefab. If you need a sp
 ---
 
 ## Example Directory Structure
-
-Assets/
+<pre>Assets/
 +-- Prefabs/
     +-- UI/
         +-- Legacy/
@@ -141,6 +140,7 @@ Assets/
             +-- TextVariants/
                 +-- TitleTextPrefab.prefab
                 +-- FieldLabelTextPrefab.prefab
+</pre>
 
 ## License
 
