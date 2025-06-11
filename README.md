@@ -60,3 +60,96 @@ The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, 
 
 5. **Customization**: For each UI component, specific changes are applied, such as setting text properties or replacing components with the appropriate prefab variants. The user can create additional prefab variants using any of the generated prefabs, normally in the Unity editor.
 
+## Prefab Structure Overview
+
+After running the generator, your project will contain a set of UI prefabs organized for easy use and extension. Here’s how the generated prefabs are structured:
+
+### 1. **Prefab Directories**
+- **Standard Unity UI Prefabs:**  
+  - Location: `Assets/Prefabs/UI/Legacy/`
+- **TextMeshPro UI Prefabs:**  
+  - Location: `Assets/Prefabs/UI/TextMeshPro/`
+- **Common Subfolders:**  
+  - `TextVariants/` — contains specialized text prefab variants (e.g., title, label, tooltip).
+
+### 2. **Base Prefabs**
+- **Definition:** The foundational UI elements, intended to be used directly or as the parent for creating new prefab variants.
+- **Examples:**
+  - `BaseTextPrefab`
+  - `InputFieldPrefab` or `InputFieldTMPPrefab`
+  - `BaseButtonPrefab` or `BaseButtonTMPPrefab`
+  - `DropdownPrefab` or `DropdownTMPPrefab`
+  - `PanelPrefab`, `SliderPrefab`, `TogglePrefab`, etc.
+
+### 3. **Prefab Variants**
+- **Definition:** Prefabs derived from a base prefab, with specific property changes (e.g., font size, alignment, color).
+- **Location:**  
+  - `TextVariants/` subfolder within each UI type directory.
+- **Examples:**
+  - `TitleTextPrefab` — larger, bold, centered text for titles.
+  - `SubtitleTextPrefab` — slightly smaller than title, bold, centered.
+  - `BodyTextPrefab` — default body text style, left-aligned.
+  - `ButtonTextPrefab` — text styling suitable for buttons.
+  - `TooltipTextPrefab`, `TinyTextPrefab`, `FieldLabelTextPrefab`, etc.
+
+### 4. **Relationships and Inheritance**
+- **Prefab Variants are children of their respective base prefabs.**
+- **Changing a property on the base prefab (not overridden in a variant) will update all variants.**
+- **If you override a property in a variant, future base changes to that property won’t propagate to that variant.**
+
+### 5. **How to Use the Prefabs**
+- **Direct Use:**  
+  - Drag and drop any base or variant prefab into your Canvas.
+- **Creating Your Own Variants:**  
+  - Right-click any base or variant prefab in the Project window and select “Create Prefab Variant”.
+  - Adjust only the properties you want to override (e.g., color, font size).
+
+### 6. **Customizing Styles**
+- **To update the look of all similar UI elements:**  
+  - Modify the relevant base prefab (e.g., change font or color on `BaseTextPrefab`).
+  - All variants and UI controls using that base will inherit the new style unless they have an override.
+- **To create new prefab types:**  
+  - Use Unity’s prefab system to create new variants from an existing base, and organize them within the same folder structure.
+
+### 7. **Naming Conventions**
+- **Base Prefabs:**  
+  - `Base*Prefab` or `*Prefab` (e.g., `BaseTextPrefab`, `InputFieldPrefab`)
+- **Variants:**  
+  - Descriptive of their intended use (e.g., `TitleTextPrefab`, `ButtonTextPrefab`, `FieldLabelTextPrefab`)
+
+---
+
+**Tip:**  
+If you’re unsure which prefab to use, start with a base prefab. If you need a specialized style (like a title or label), use the closest variant or create your own by duplicating or creating a prefab variant in Unity.
+
+---
+
+## Example Directory Structure
+
+Assets/
++-- Prefabs/
+    +-- UI/
+        +-- Legacy/
+        ¦   +-- BaseTextPrefab.prefab
+        ¦   +-- InputFieldPrefab.prefab
+        ¦   +-- TextVariants/
+        ¦       +-- TitleTextPrefab.prefab
+        ¦       +-- FieldLabelTextPrefab.prefab
+        +-- TextMeshPro/
+            +-- BaseTextPrefab.prefab
+            +-- InputFieldTMPPrefab.prefab
+            +-- TextVariants/
+                +-- TitleTextPrefab.prefab
+                +-- FieldLabelTextPrefab.prefab
+
+## License
+
+All rights reserved.
+
+No license is granted for use, modification, distribution, or any other purpose without prior written permission.
+
+If you're an independent developer and would like to use this software, email glurth at gmail.com to request a license. I usually approve such requests for free.  Businesses may contact me for pricing.
+
+## Contributions
+
+While contributions are welcome, they cannot be used without your explicit written permission, as this project will remain proprietary software.
