@@ -1,14 +1,21 @@
-# UIPrefabGenerator
+# UI Prefab Generator
 This Unity script allows you to automatically generate reusable and customizable UI prefabs for your project. It supports both standard Unity UI and TextMeshPro UI components. The prefabs are saved in the specified Asset folder and are designed to ensure consistency across scenes, reducing manual updates.
 
 ## Installation
 
 In the unity editor, package manager, click to add a package from a git url:  https://github.com/glurth/UIPrefabGenerator.git
 
+## Purpose
+The main advantage to using the package, is a UI that is less work to update, than one where each UI component is created individually. 
+
+The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, a modular approach to UI design in Unity. This workflow emphasizes the creation of reusable prefab templates and their variants to achieve consistency, efficiency, and scalability in UI development.
+
+
 ## Usage
+
 Either option may be used, but you probably don't want to use both.
 
-- **Generate Standard UI Prefabs**:
+- **Generate Standard/Legacy UI Prefabs**:
    - Open Unity Editor.
    - Go to `Tools > Generate UI Prefabs` to generate and customize the standard UI prefabs.
    - This will create the prefabs in the `Assets/Prefabs/UI` directory.
@@ -17,14 +24,16 @@ Either option may be used, but you probably don't want to use both.
    - Go to `Tools > Generate TextMeshPro UI Prefabs` to generate and customize the TextMeshPro UI prefabs.
    - The prefabs will be saved in the `Assets/Prefabs/UI_TextMeshPro` directory.
 
-## Purpose
-The UIPrefabGenerator aligns with the **Prefab-Based UI Composition** workflow, a modular approach to UI design in Unity. This workflow emphasizes the creation of reusable prefab templates and their variants to achieve consistency, efficiency, and scalability in UI development.
+- **Use these prefabs** to define your canvas windows/layout, rather than using Editor: Create->UI->XXX.
 
 ### Prefab-Based UI Composition Workflow
 
 **Overview:**
-This workflow involves creating reusable prefabs for Unity UI components. These prefabs act as templates that are instantiated and customized as needed. Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
-Variants in Unity are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.
+This workflow involves creating reusable prefabs for Unity UI components. 
+- These prefabs act as templates that are customized and instantiated as needed. 
+- Variants of these prefabs are created for specific use cases, ensuring consistency while allowing for tailored designs.
+
+"Variants", in Unity, are prefabs that inherit properties from a base prefab but allow for specific overrides. Changes to the base prefab propagate to its variants, except for properties explicitly modified in the variant.  It is this "uniformity" that the package leverages.
 
 **Advantages:**
 - **Consistency**: Ensures a uniform look and feel across the UI, reducing design discrepancies.
@@ -34,11 +43,6 @@ Variants in Unity are prefabs that inherit properties from a base prefab but all
 - **Collaboration-Friendly**: Teams can work with pre-defined prefabs, reducing the risk of unaligned designs or functionality.
 - **Scalability**: Facilitates faster iteration and expansion of UI as the project grows.
 
-## Features
-- **Automatic Prefab Generation**: Generates prefabs for commonly used UI elements such as Text, Buttons, Input Fields, Dropdowns, and more.
-- **Variants Support**: Creation of some prefab variants, such as TitleText, LabelText, etc., with different properties.
-- **TextMeshPro Support**: Can create TextMeshPro-based UI prefabs, or legacy.
-- **Reusable Components**: Changes made to the base prefab will propagate across all variants and instances, ensuring uniformity in the UI.
 
 ## How It Works
 1. **Base Prefabs**: Base UI prefabs are created and saved in the appropriate directory. These base prefabs serve as templates for creating variant prefabs.  Those UI Controls that use other controls (like an ``InputField`` uses a ``Text``), will have those internal control replaced with a prefab (or variant). This will allow changes to the base text prefabs to work for say.. Buttons.
@@ -46,10 +50,8 @@ Variants in Unity are prefabs that inherit properties from a base prefab but all
 2. **Prefab Variants**: Prefab variants such as `PlaceholderTextPrefab`, `TitleTextPrefab`, `LabelTextPrefab` are automatically generated from the base prefab with specific changes (e.g., font size, alignment, color).  Custom prefab Variants can of course be createdat any time.
 
 3. **UI Components**: The script automatically generates and customizes various UI elements like:
-   - `InputField`
-   - `Button`
-   - `Dropdown`
-   - And their respective TextMeshPro variants
+   `InputField`, `Button` and `Dropdown`.   
+    These kinds of compound UI elements will, in turn, use other prefabs like LabelTextPrefab or PlaceholderTextPrefab where appropriate.
 
 5. **Customization**: For each UI component, specific changes are applied, such as setting text properties or replacing components with the appropriate prefab variants. The user can create additional prefab variants using any of the generated prefabs, normally in the Unity editor.
 
@@ -136,14 +138,16 @@ If you’re unsure which prefab to use, start with a base prefab. If you need a sp
                 +-- FieldLabelTextPrefab.prefab
 </pre>
 
-## License
-
-All rights reserved.
-
-No license is granted for use, modification, distribution, or any other purpose without prior written permission.
-
-If you're an independent developer and would like to use this software, email glurth at gmail.com to request a license. I usually approve such requests for free.  Businesses may contact me for pricing.
-
 ## Contributions
 
-While contributions are welcome, they cannot be used without your explicit written permission, as this project will remain proprietary software.
+Contributions, issues, and feature requests are welcome! Please submit them via the GitHub repository. Note: Due to licensing, contributions can only be included with explicit written permission from the copyright holder.
+
+## License
+
+This package is licensed under the EyE Dual-Licensing Agreement.
+
+It provides free, perpetual use for indie developers and non-commercial projects whose teams had Total Gross Receipts under $100,000 USD in the previous fiscal year.
+
+Organizations exceeding this threshold must obtain a Perpetual Commercial License (PCL) for each named commercial project.
+
+Please review the full terms in [LICENSE.md](LICENSE.md) before commercial use.
